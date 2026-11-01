@@ -22,6 +22,10 @@ If Moodiary has been useful to you, you can [buy the author a sandwich](https://
 
 This site is open source too, hosted in the [moodiary-docs](https://github.com/ZhuJHua/moodiary-docs) repository and built with [VitePress](https://vitepress.dev/). Found a mistake or missing something? Pull Requests are welcome — every page has an "Edit this page on GitHub" link in the bottom-right corner.
 
+## Privacy Policy
+
+Moodiary does not collect your data. See the [Privacy Policy](./privacy-policy).
+
 ## License
 
 Copyright © 2022-present ZhuJHua and Moodiary contributors.

@@ -22,6 +22,10 @@ Moodiary 是一款跨平台、完全开源的日记应用，基于 Flutter 与 R
 
 本站文档同样开源，位于 [moodiary-docs](https://github.com/ZhuJHua/moodiary-docs) 仓库，基于 [VitePress](https://vitepress.dev/) 构建。发现错误或想补充内容，欢迎直接提交 Pull Request——每页右下角都有「在 GitHub 上编辑此页」的入口。
 
+## 隐私政策
+
+Moodiary 不收集你的数据，详见[隐私政策](./privacy-policy)。
+
 ## 许可证
 
 Copyright © 2022-present ZhuJHua 与 Moodiary 贡献者。

@@ -14,7 +14,7 @@ Under **Settings → App Lock** you can set a passcode lock:
 ## Data storage
 
 - All entries, media, and settings are stored in a **SQLite** database in the app's private directory;
-- Apart from third-party services you configure yourself, the app makes no network requests;
+- The app goes online only for features that need it, such as third-party services and model downloads. See the [Privacy Policy](../privacy-policy);
 - No ad SDK, no analytics SDK, no crash reporting.
 
 ## Sync encryption
