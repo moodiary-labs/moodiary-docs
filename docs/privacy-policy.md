@@ -2,88 +2,91 @@
 
 **Effective date: November 2, 2026**
 
-Moodiary is an open source diary app by ZhuJHua and community contributors. Its [source code](https://github.com/ZhuJHua/moodiary) is public.
+Moodiary (the "App") is an open-source diary app developed by ZhuJHua and community contributors (collectively, "we" or "the Developer"). The [source code](https://github.com/ZhuJHua/moodiary) is publicly available for inspection and verification.
 
-## Overview
+This policy explains how the App handles your information. Please read it in full before using the App. By using the App, you confirm that you understand the practices described below.
 
-- **The developer does not collect your data.** Moodiary has no account system or server storing diaries.
-- **The app has no advertising, analytics or crash-reporting SDKs** and does not track you.
-- **Data stays on your device by default.** It goes to a service only when you use a feature listed below.
+## Scope
 
-## Data stored on your device
+This policy applies to all client versions of the App offered on any platform. In this policy, "you" means the end user of the App, and "we" or "the Developer" means the open-source author and contributors of the App.
 
-The app's private storage holds:
+## Summary
 
-- Diary text, photos, videos, audio recordings, moods, categories and tags;
-- Places and weather you add to entries;
-- AI assistant conversations and memories;
-- Settings and error logs. Logs are not uploaded automatically.
+- **We do not collect your data.** The App has no account system and no server that stores diaries.
+- **The App contains no advertising, analytics, or crash-reporting SDKs,** and does not track you across other apps or websites.
+- **Your data stays on your device by default.** Data is sent to a third-party service only when you use the features described below.
 
-API keys and sync credentials use the system's secure storage. The app lock password is stored only as a non-reversible derived value (Argon2id). The system handles biometrics; the app cannot access your face or fingerprint data.
+## Data Stored on Your Device
 
-On-device features such as semantic search and mood suggestions do not send diary content.
+The App keeps the following in its private storage:
 
-## Data that leaves your device
+- diaries, along with their images, videos, audio recordings, moods, categories, and tags;
+- the locations and weather associated with your entries;
+- AI assistant conversations and long-term memory;
+- app settings and error logs (logs remain on your device and are never uploaded automatically).
 
-Moodiary can contact the services below. Requests expose ordinary network information such as your IP address. Except for the AI model catalog and model downloads, you must configure or select each service first. The developer cannot see request content.
+API keys and sync credentials are stored in the secure storage provided by the operating system. The app lock stores only an irreversible value derived from your password using Argon2id. Biometric authentication is performed by the operating system; the App cannot access your face or fingerprint data.
 
-| Service | When data is sent | What is sent |
+On-device features such as semantic search and mood suggestions run entirely on your device and do not send diary content anywhere.
+
+## Data That Leaves Your Device
+
+The App may contact the services listed below. Any network request necessarily exposes information such as your IP address to the recipient. Except for the AI model catalog and model downloads, each service requires configuration or explicit activation on your part; we are not involved in these transfers and cannot see their contents.
+
+| Recipient | When it is sent | What is sent |
 | --- | --- | --- |
-| Your configured AI provider | Sending the AI assistant a message | Your message, attachments, conversation context, relevant diary content read by the assistant's tools, and API key |
-| [models.dev](https://models.dev/) | Viewing or choosing preset AI providers and models | Requests for the model catalog and provider logos; no diary content |
-| Your configured WebDAV or S3 service | Syncing or backing up | Entries, media, settings and service credentials. With end-to-end encryption on, the service sees only ciphertext |
-| Devices on the same local network | Starting a LAN transfer and entering the pairing code | Your chosen diary data, encrypted in transit |
-| [QWeather](https://www.qweather.com/) or your custom API host | After configuration, fetching weather or a place for an entry | Coordinates, language setting and API key |
-| [OpenStreetMap](https://www.openstreetmap.org/) or [Tianditu](https://www.tianditu.gov.cn/) | Selecting that map source and viewing a map | Tile requests revealing the area viewed; Tianditu also receives your API key |
-| [Hugging Face](https://huggingface.co/) or your custom download source | Downloading an on-device model | Requests for model files; no diary content |
-| GitHub | Android only, tapping "Check for updates" | A request for the latest version |
+| AI service provider you configure | When you send a message to the AI assistant | Your message and attachments, conversation context, diary content the assistant reads through tool calls, and the API key used for authentication |
+| [models.dev](https://models.dev/) | When you browse or select preset AI providers and models | Requests for the model catalog and provider logos; no diary content |
+| WebDAV or S3 service you configure | When you sync or back up | Entries, categories, media files and sync credentials. With end-to-end encryption enabled, the provider can only access ciphertext |
+| The device you pair with on the same local network | When you start a local transfer and complete pairing | Entries, categories and media the other device doesn't have yet. Transfers are encrypted with a key derived from the pairing code |
+| [QWeather](https://www.qweather.com/) or an API endpoint you specify | When the App fetches weather or location data for an entry, after configuration | Coordinates, language settings, and your API key |
+| [OpenStreetMap](https://www.openstreetmap.org/) or [Tianditu](https://www.tianditu.gov.cn/) | When you select that map source and view the map | Tile requests, which reveal the area you are viewing; Tianditu also receives your API key |
+| [Hugging Face](https://huggingface.co/) or a download source you specify | When you download an on-device model | Requests to download model files; no diary content |
+| GitHub | When you check for updates from within the App (Android only) | A request for the latest release |
 
-Before you first use the AI assistant, the app explains what is sent and requires your agreement. With a locally hosted model, conversations do not go to an external provider.
+Before you first use the AI assistant, the App presents a dedicated notice describing what will be sent to the external provider, and the feature remains unavailable until you consent. If you use a locally deployed model, your conversations are not sent to any external provider.
 
-These services are run by their providers or by you, under their own privacy policies. The developer has no data-sharing arrangement with them.
+These services are operated by their respective providers or by you, and each is governed by its own privacy policy and data practices. We have no data-sharing arrangement with any of them.
 
-Content shared through the system share sheet and external links are handled by your chosen app or website.
+Content you share through the system share sheet, and external links you open, are handled by the app or website you choose.
 
-## System permissions
+## Device Permissions
 
-Permissions are requested only when you use the feature. You can turn them off in system settings:
+The permissions below are requested only when you use the corresponding feature, and you can revoke them at any time in your system settings.
 
 | Permission | Purpose |
 | --- | --- |
-| Camera, microphone | Take photos and videos, and record audio for entries |
-| Photo library | Add photos and videos to entries, or save them |
-| Location (while in use) | Add places and weather to entries. The app never gets your location in the background |
-| Face ID or fingerprint | Unlock the app with App Lock on |
-| Local network | Transfer data between your devices on the same Wi-Fi |
+| Camera, microphone | Take photos, record video, or record audio for diary entries |
+| Photo library | Add photos and videos to entries, or save photos and videos from entries to your library |
+| Location (while in use) | Add location and weather information to entries. The App does not access your location in the background or track it continuously |
+| Face ID or fingerprint | Unlock the App when the app lock is enabled |
+| Local network | Transfer diary data with another device on the same Wi-Fi network |
 
-## Retention and deletion
+## Data Retention and Deletion
 
-Data stays on your device until you delete it.
+Data remains on your device until you delete it.
 
-- **Entries:** Deleted entries go to the recycle bin first. Delete them there to remove them permanently.
-- **Local data:** Uninstalling deletes it, but iOS Keychain credentials may remain. If system backups are on, device backups may contain app data. Manage these in system settings.
-- **Synced data:** Delete it on your WebDAV or S3 service.
-- **Data sent to AI providers or other third parties:** Follow that service's policy.
-- **Withdrawing consent:** Stop using the feature, remove its credentials in the app and turn off its permissions in system settings.
+- **Diaries:** a deleted entry is moved to the recycle bin and is erased only when permanently deleted from the bin.
+- **AI assistant memory:** cleared memory is permanently deleted, is not moved to the recycle bin, and cannot be recovered.
+- **Local data:** uninstalling the App removes it, although credentials in the iOS keychain may persist. If you use system backups, your device backup may contain App data, which you manage in your system settings.
+- **Synced data:** delete it from your own WebDAV or S3 service.
+- **Data already sent to an AI provider or another third party:** handled under that provider's policy; we cannot delete it on your behalf.
+- **Withdrawing consent:** disable the relevant feature, remove the associated credentials in the App, and revoke the corresponding permission in your system settings.
 
-The developer holds no data and cannot look it up, export it or delete it for you. You can view, edit and export your data in the app.
+Because we do not hold your data, we cannot look up, export, or delete it for you. You can view, edit, and export your data in the App at any time.
 
-## App stores
+## App Stores
 
-The App Store and other download platforms process download data under their own privacy policies. They may give the developer aggregated download and usage statistics and crash reports users agreed to share, without diary content.
+Distribution platforms such as the App Store process download and installation data under their own privacy policies, and may provide us with aggregated download figures, usage statistics, and crash reports that users have agreed to share. None of this information includes diary content.
 
 ## Minors
 
-Moodiary is not aimed at any age group and does not knowingly collect personal information. Minors should use it with a guardian's guidance, especially when configuring or using third-party services.
+The App is not designed for any particular age group, and we do not knowingly collect personal information from any user. Minors should use the App under the guidance of a guardian, particularly when configuring or using third-party services.
 
-## This website and the community
+## Changes to This Policy
 
-This policy covers only the Moodiary app. This documentation site uses visitor analytics; the [official forum](https://answer.moodiary.net) is a separate system. Both process visit information.
-
-## Changes to this policy
-
-Changes update this page and its effective date. Earlier versions are in the [documentation repository](https://github.com/ZhuJHua/moodiary-docs).
+When this policy changes, we will update this page and the effective date. Previous versions are available in the [documentation repository](https://github.com/ZhuJHua/moodiary-docs).
 
 ## Contact
 
-Contact us through [GitHub Issues](https://github.com/ZhuJHua/moodiary/issues) or the [official forum](https://answer.moodiary.net). Please do not post diary content, API keys or other sensitive information publicly.
+If you have questions about this policy, contact us through [GitHub Issues](https://github.com/ZhuJHua/moodiary/issues). Please do not post diary content, API keys, or other sensitive information in that public channel.
