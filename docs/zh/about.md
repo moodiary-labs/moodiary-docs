@@ -10,7 +10,6 @@ Moodiary 是一款跨平台、完全开源的日记应用，基于 Flutter 与 R
 
 ## 社区
 
-- 官方论坛：<https://answer.moodiary.net>
 - Telegram：<https://t.me/openmoodiary>
 - QQ 交流群：760014526
 

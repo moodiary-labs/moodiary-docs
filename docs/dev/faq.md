@@ -1,6 +1,6 @@
 # FAQ
 
-The usual pitfalls on the development side. For questions as a user, head to the [official forum](https://answer.moodiary.net).
+The usual pitfalls on the development side. For questions as a user, use [GitHub Issues](https://github.com/ZhuJHua/moodiary/issues).
 
 ## Building and running
 

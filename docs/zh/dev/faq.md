@@ -1,6 +1,6 @@
 # 常见问题
 
-开发者侧的常见坑。用户侧的问题请到[官方论坛](https://answer.moodiary.net)提问。
+开发者侧的常见坑。用户侧的问题请到 [GitHub Issues](https://github.com/ZhuJHua/moodiary/issues) 提问。
 
 ## 构建 / 运行
 

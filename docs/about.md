@@ -10,7 +10,6 @@ Moodiary is an open source diary app built with Flutter and Rust, released under
 
 ## Community
 
-- Official forum: <https://answer.moodiary.net>
 - Telegram: <https://t.me/openmoodiary>
 - QQ group: 760014526
 

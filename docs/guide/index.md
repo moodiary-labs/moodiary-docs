@@ -30,6 +30,6 @@ Moodiary is shaped by its community. Whether you want to report a bug, suggest a
 
 - Report issues or suggest features on [GitHub Issues](https://github.com/ZhuJHua/moodiary/issues)
 - Read the [developer docs](../dev/) to set up the environment and submit code
-- Join the conversation on the [official forum](https://answer.moodiary.net/), the [Telegram group](https://t.me/openmoodiary), or QQ group 760014526
+- Join the conversation in the [Telegram group](https://t.me/openmoodiary) or QQ group 760014526
 
 If Moodiary has been helpful, you can also [buy the author a sandwich](https://github.com/ZhuJHua/moodiary#-sponsor).

@@ -30,6 +30,6 @@ Moodiary 的发展离不开社区。无论是提交 Bug、提出功能建议、�
 
 - 在 [GitHub Issues](https://github.com/ZhuJHua/moodiary/issues) 反馈问题或提出建议
 - 阅读 [开发者文档](../dev/) 了解如何搭建环境并提交代码
-- 在 [官方论坛](https://answer.moodiary.net/)、[Telegram 群组](https://t.me/openmoodiary) 或 QQ 群（760014526）参与讨论
+- 在 [Telegram 群组](https://t.me/openmoodiary) 或 QQ 群（760014526）参与讨论
 
 如果 Moodiary 对你有帮助，也可以[请作者吃个三明治](https://github.com/ZhuJHua/moodiary#-sponsor)。
