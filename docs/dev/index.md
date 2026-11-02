@@ -32,7 +32,6 @@ Before you submit, make sure that:
 
 ## Community
 
-- Official forum: <https://answer.moodiary.net>
 - Telegram: <https://t.me/openmoodiary>
 - QQ group: 760014526
 

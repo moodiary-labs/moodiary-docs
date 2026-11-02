@@ -32,7 +32,6 @@ fork / clone → 搭建环境 → 新建分支 → 开发与自测 → 提交 Pu
 
 ## 社区
 
-- 官方论坛：<https://answer.moodiary.net>
 - Telegram：<https://t.me/openmoodiary>
 - QQ 群：760014526
 
