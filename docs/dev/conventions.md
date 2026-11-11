@@ -5,7 +5,7 @@ These conventions are what keep more than 30 packages consistent as they evolve.
 ## Layers and imports
 
 - Respect the `foundation → core → feature_base → feature → apps` direction; `tool/check_layers.dart` will catch violations.
-- **Product code may only `import 'package:mui/mui.dart'`** — never import `material` directly.
+- Import Material APIs through `package:mui/mui.dart`, which exports `material_ui`; avoid direct `package:flutter/material.dart` imports except for the picker compatibility shim.
 - `mui` complements Material rather than replacing it: use Material when it is enough, and only add to `mui` (with an `M` prefix) when it is not.
 - Themes are constructed in exactly one place, `buildMuiTheme()` in `mui`; read values from `ColorScheme` / `TextTheme` and `MuiTokens`.
 
@@ -21,9 +21,9 @@ These conventions are what keep more than 30 packages consistent as they evolve.
 
 - Put binding annotations on the **implementation class** (`@Singleton(as:)` and friends).
 - There is a single `configureDependencies` in the whole repository (`mobile/lib/app/di/di.dart`); infrastructure packages hook in as micro-modules.
-- Always resolve with `getIt<X>()`; **never hand-write `getIt.register*`** (the one exception is the sync session scope).
+- Always resolve with `getIt<X>()`; production registrations are generated except for the sync session scope. Tests may register fakes directly.
 - Do not use `@PostConstruct` — startup logic belongs in the bootstrap in `main`.
-- After changing an annotation you must run `dart tool/task.dart build-runner`, and the generated files need to be committed.
+- After changing an annotation you must run `fvm dart tool/task.dart build-runner`, and the generated files need to be committed.
 
 ## Routing: go_router + extra
 
@@ -36,9 +36,10 @@ These conventions are what keep more than 30 packages consistent as they evolve.
 
 - Use `context.l10n.xxx` for copy (it refreshes when the language changes); use the top-level `l10n.xxx` in services and callbacks.
 - Pass parameters by name and spell keys out in full — local aliases make the analyzer report keys as dead.
-- After editing a `*.i18n.json`, run `dart tool/task.dart i18n` and commit the generated files.
+- App strings live in `i18n/flutter`; mui strings live in its own `lib/src/i18n`. After editing a `*.i18n.json`, run `fvm dart tool/task.dart i18n` and commit the generated files.
 - Text aimed at models (prompts, tool descriptions) is hardcoded in English and stays out of i18n.
 - `mui` ships its own separate slang output (`context.muiL10n`).
+- Editor translations in `i18n/web/{zh,en}.json` are bundled as-is and need no slang generation.
 
 ## KV storage
 
@@ -51,12 +52,13 @@ These conventions are what keep more than 30 packages consistent as they evolve.
 
 - Every native package owns its crate, native library, build hook, `rust-toolchain.toml` and `Cargo.lock`.
 - `[workspace.dependencies]` is **not used**: shared crates are pinned separately in each package, and `tool/check_generated.dart` verifies that the versions match.
-- After changing `rust/src/api` you must run `dart tool/task.dart gen-rust`.
-- Opaque handles (such as `CancelToken`) cannot cross `.so` boundaries: each library constructs its own, and only after `await ensureInitialized()`.
-- Every package exposes `Xxx.ensureInitialized()`, which is safe to call repeatedly.
+- After changing `rust/src/api` you must run `fvm dart tool/task.dart gen-rust`.
+- Opaque handles (such as `CancelToken`) cannot cross `.so` boundaries: each library constructs its own, after initializing that library's runtime.
+- Use each package's runtime entry point; images initialize at startup through `FastImageRuntime.init()`, while other runtimes use `ensureInitialized()` (crypto initializes through its facade).
+- Custom Kotlin / Swift integrations use Pigeon in `moodiary_native`; regenerate them with `fvm dart tool/task.dart pigeon`.
 
 ## Commits and versions
 
-- Commit messages follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/), which is how CI generates the CHANGELOG.
+- Commit messages follow [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/), which the local release script uses to generate the CHANGELOG.
 - To keep a PR out of the CHANGELOG, put `Changelog: skip` in the body of the squashed commit, or use one of the skipped scopes (`chore(deps|readme|pr|pull)`).
-- **Every version is pinned exactly.** The one exception is melos in the root `pubspec.yaml`.
+- Keep dependency versions pinned, including melos in the root `pubspec.yaml`, and align shared native pins across packages.

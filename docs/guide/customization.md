@@ -4,7 +4,7 @@ Moodiary ships with a calm **monochrome** palette by default, but you're free to
 
 ## Mode
 
-Under **Settings → Appearance** you can choose:
+Under **Settings → Display** you can choose:
 
 - **Follow system**: matches your system's light or dark mode;
 - **Light** / **Dark**: fixed manually.
@@ -16,20 +16,20 @@ The accent color drives links, buttons, and highlights, and offers three modes:
 | Mode | Notes |
 | --- | --- |
 | **Monochrome** (default) | A grayscale palette that stays quiet and restrained, independent of any wallpaper color your system provides |
-| **Follow system** | Uses Android 12+ / iOS dynamic color, sampling a color from your wallpaper |
+| **Follow system** | Uses system dynamic color when supported by the device |
 | **Custom** | Pick a color you like from the swatch |
 
 ## Fonts
 
-**Settings → Fonts** lets you import custom font files:
+**Settings → Font** lets you import custom font files:
 
 - Common font formats are supported, including **variable fonts** (imported fonts show a "variable font" badge and let you adjust the weight);
-- Imported fonts are stored in the app's data directory and migrate with your [backup](./sync#backup).
-
-::: tip
-Variable fonts usually read better in dark mode and on dim screens — try dropping the weight below 400.
-:::
+- Imported fonts are stored in the app's data directory. Import them again on a new device; they are not included in backups.
 
 ## Typography details
 
-In Settings you can also adjust options like first-line indentation, so the editor feels closer to how you like to write.
+Under **Settings → Diary settings**, adjust first-line indentation. Text size follows your system settings.
+
+## Mood colors
+
+**Settings → Mood colors** offers Classic, Default, Blue–orange, and Colorblind-friendly palettes for mood displays.

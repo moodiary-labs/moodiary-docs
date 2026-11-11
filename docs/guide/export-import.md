@@ -1,6 +1,6 @@
 # Export, import, and sharing
 
-Your data only truly belongs to you once it can leave Moodiary.
+Export entries for sharing, or create a backup to move your diary to another device.
 
 ## Export
 
@@ -17,10 +17,12 @@ Embedded media travels with the text, and long-image export keeps your layout in
 
 ## Backup
 
-**Settings → Backup** generates an archive containing all your entries, media, and settings. The backup can:
+Under **Me → Import & export**, export a backup containing your entries, categories, places, and referenced media. The archive can:
 
 - Be stored on your device or any cloud drive;
-- Be fully restored on another device via **Import backup**.
+- Be restored on another device through the same page.
+
+Backups do not include app settings, custom fonts, AI conversations, or service credentials. Reconfigure these on your new device. The ZIP is **unencrypted**; store it somewhere private.
 
 ::: tip A good rhythm
 Make a full backup before switching devices and before any major version update.

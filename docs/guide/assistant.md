@@ -1,6 +1,6 @@
 # AI assistant
 
-Moodiary comes with a built-in AI assistant that understands your diary. You can chat with it, get help sorting out your moods, search directly, or even have it write entries for you.
+Chat with a provider you configure and use tools to search or edit your diary.
 
 ## Providers and on-device models
 
@@ -12,16 +12,13 @@ Any service that speaks one of the following protocols is supported, including t
 - **OpenAI Responses**
 - **Anthropic Messages**
 
-Create a new provider under **Settings → AI Assistant** and fill in the [base URL, API key, and model](../services/ai). Common providers ship with built-in presets, so you can pick one and just paste in your key.
+Create a provider under **Settings → AI assistant → Model Providers** and fill in the [base URL, API key, and model](../services/ai). Presets are available for common providers.
 
 ### 2. On-device models
 
-Beyond the provider that powers chat, the app ships with two small models that run **fully offline** once downloaded:
+Semantic search uses a local embedding model. Download and select it under **Settings → Services → Semantic search**, then search by meaning — see [Semantic search](./organize#semantic-search).
 
-- **Mood suggestion**: analyzes what you write on-device and suggests a mood;
-- **Semantic search**: enable it in Settings, then describe what you're looking for in one sentence — see [Semantic search](./organize#semantic-search).
-
-Both models are downloaded from Settings; afterwards no network is required and nothing is ever sent anywhere.
+After downloading, embedding and search run offline. Automatic mood suggestions were removed in 2.9.0; choose a mood yourself when writing.
 
 ::: tip Chat always goes through a provider
 Chat and diary tool calls are handled by your configured provider — on-device models don't take part in chat. To keep third-party cloud services out of the loop entirely, self-host an inference service like Ollama or LM Studio; see [AI models](../services/ai).
@@ -32,17 +29,16 @@ Chat and diary tool calls are handled by your configured provider — on-device 
 The assistant can call a set of controlled tools to work with your diary:
 
 - Query and semantically search your diary;
-- Create, update, and delete entries (always with your explicit confirmation);
-- List your categories;
+- Create, update, and delete entries and categories;
 - Remember preferences you tell it;
 - Run JavaScript in a controlled sandbox to process data.
 
-::: warning
-Any write or delete action asks for your confirmation first. Keep an eye on each step the assistant takes.
+::: warning Tool permissions
+The default **Ask before changes** mode confirms writes and deletions. **Auto edit** confirms only destructive actions such as overwriting entry text; **Full access** runs tools without asking. Choose the mode in AI assistant settings or for an individual conversation.
 :::
 
 ## Privacy
 
-- Chat goes through your configured provider, and only the context you actively send leaves the device;
-- Mood suggestion and semantic search run on-device, fully offline;
+- Chat sends messages, attachments, and diary content retrieved by tools to your configured provider;
+- Semantic search computes embeddings and searches on-device;
 - A disclaimer is shown on first use, and the assistant stays disabled until you accept it.

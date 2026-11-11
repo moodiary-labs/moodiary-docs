@@ -7,12 +7,12 @@ Moodiary 采用 **分层 pub workspace monorepo**：根目录的 `pubspec.yaml` 
 ```
 moodiary/
 ├── tool/          # 任务运行器、分层检查、发布脚本
-├── mobile/        # Flutter 应用（pub 名 moodiary，Android + iOS）
+├── mobile/        # Flutter 应用（pub 名 moodiary_mobile，Android + iOS）
 │   └── lib/
 │       ├── app/   # 组合层：DI、路由、壳、生命周期、设置
 │       └── main.dart
 ├── packages/
-│   ├── foundation/    # 第 1 层：无内部依赖
+│   ├── foundation/    # 第 1 层：公共原语与原生库
 │   ├── core/          # 第 2 层：领域无关的基础设施
 │   ├── feature_base/  # 第 3 层：可复用的领域基础
 │   └── feature/       # 第 4 层：彼此独立的功能模块
@@ -25,7 +25,7 @@ moodiary/
 
 ### foundation
 
-叶子层，不依赖任何内部包。
+公共原语层，不依赖其它内部包；六个 `fast_*` 包共用 `rust_hook` 构建包是例外。
 
 | 包 | 职责 |
 | --- | --- |
@@ -36,13 +36,14 @@ moodiary/
 | `moodiary_router` | 基于 go_router 的类型化路由原语 |
 | `mui` | 设计系统，Material 的补充 |
 | `moodiary_utils` | 纯工具函数与内容转换 |
-| `moodiary_rust` | HTTP 客户端/服务端、WebDAV/S3 同步、LLM、图布局 |
+| `fast_core` | HTTP 客户端/服务端、WebDAV/S3 同步、LLM、图布局 |
 | `fast_image` | 图片管线（缩略图、区域解码、平铺查看） |
 | `fast_press` | 排版导出为 PDF / DOCX |
 | `fast_tokenizer` | jieba + HF tokenizer 分词 |
 | `fast_crypto` | AES-GCM + Argon2id |
 | `fast_zip` | 压缩与解压（支持条目级 AES） |
-| `moodiary_sqlite_vec` | sqlite-vec，本地向量检索 |
+| `moodiary_native` | 应用 Kotlin / Swift 集成的 Pigeon API |
+| `rust_hook` | 六个 Rust 包共用的构建钩子 |
 
 ### core
 
@@ -65,15 +66,16 @@ moodiary/
 pub 只能保证无环，无法保证方向。`tool/check_layers.dart` 以 `tool/layer_baseline.txt` 为基线做静态检查，会拒绝：
 
 - 下层依赖上层；
-- 同层互引；
-- 层内顺序违规（core 与 feature_base 各有内部顺序）；
+- 不符合 core / feature_base 层内顺序或共享 Rust 钩子例外的同层依赖；
 - 业务代码直接 import `material`（必须经由 `package:mui/mui.dart`）。
 
-CI 会在每次 Pull Request 上运行该检查。
+PR 路径影响 Dart job 时，CI 会运行该检查。
 
-## 应用内分层
+## 应用组合与原生代码
 
-`mobile/lib` 内部也有自己的顺序：`gen → core → data → component → feature/<x> → app → main.dart`。
+`mobile/lib` 包含 `app/`、生成资源 `gen/` 与 `main.dart`。共享领域及功能代码放在 `packages/`；组合根装配 get_it / injectable 服务与路由，Riverpod 管理 UI 状态。
+
+自有 Kotlin / Swift 集成集中在 `moodiary_native`，通过 Pigeon 调用。`fast_core` 分别暴露 HTTP、同步、LLM、图布局门面，归属由 `tool/check_layers.dart` 定义。数据库通过外部 `sqlite3_simple` 与 `sqlite3_vec` 包实现全文和向量检索。
 
 ## 放代码的原则
 

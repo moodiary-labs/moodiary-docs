@@ -1,59 +1,61 @@
 # 代码生成
 
-大量代码由生成器产出，并且**生成文件会被提交**。改动之后记得重新生成并一起提交，否则 CI 会失败。
+生成的源文件会提交到仓库。修改输入后，请重新生成并一起提交。以下命令均在仓库根目录执行。
 
 ## Dart 代码生成（build_runner）
 
-覆盖 `injectable`、`freezed`、`json_serializable` 等：
-
 ```bash
-dart tool/task.dart build-runner
+fvm dart tool/task.dart build-runner
 ```
 
-- 必须在**仓库根目录**执行：只跑 `mobile/` 会漏掉各包里的注解；
-- 会顺带执行 `dart format .`；
-- 触发时机：修改了 DI 绑定注解、Freezed 模型或 JSON 序列化标注。
+依次在所有依赖 `build_runner` 的 workspace 包中执行生成，然后运行 `dart format .`。修改 injectable 绑定、Freezed 模型、JSON 序列化或 drift 表后执行；只跑 `mobile/` 会漏掉包内输入。
 
 ## Rust FFI 绑定（flutter_rust_bridge）
 
 ```bash
-dart tool/task.dart gen-rust
+cargo install flutter_rust_bridge_codegen --version 2.13.0 --locked
+fvm dart tool/task.dart gen-rust
 ```
 
-- 触发时机：修改了任何原生包的 `rust/src/api`；
-- 会先校验 `flutter_rust_bridge_codegen` CLI 与 pubspec 中钉定的版本一致（不一致会直接拒绝，防止悄悄改写钉定版本），必要时安装：
-
-  ```bash
-  cargo install flutter_rust_bridge_codegen --version 2.13.0 --locked
-  ```
-
-- 生成完成后会执行 `cargo fmt` 与 analyze。
+修改原生包的 `rust/src/api` 后执行。任务先校验 CLI 与 FRB 钉定版本一致，再生成全部六个包的绑定，执行 `cargo fmt` 并分析生成的 Dart 绑定。
 
 ## 国际化（slang）
 
 ```bash
-dart tool/task.dart i18n
+fvm dart tool/task.dart i18n
 ```
 
-- 触发时机：修改了 `moodiary_i18n` 或 `mui` 中的 `*.i18n.json`；
-- 没有任何 CI 校验会捕捉「忘了重新生成」，务必手动执行并提交产物。
+修改应用源文件 `i18n/flutter/*.i18n.json` 或 mui 的 `lib/src/i18n/*.i18n.json` 后执行。应用输出位于 `moodiary_i18n`。编辑器翻译 `i18n/web/{zh,en}.json` 直接打包，不需要 slang 生成。CI 不检查 slang 产物是否最新。
 
-## 一次性执行两个
+## 平台绑定（Pigeon）
 
 ```bash
-dart tool/task.dart gen
+fvm dart tool/task.dart pigeon
 ```
 
-## 一致性检查
+修改 `packages/foundation/moodiary_native/pigeons/*.dart` 后执行，重新生成 Dart 及配置的平台 Kotlin / Swift 绑定。
 
-`tool/check_generated.dart` 在 `analyze` 与 CI 中运行，负责保证跨包一致：
+## 数据库迁移（drift）
 
-- 六个原生包的 `Cargo.toml`、工具链、FRB / ffigen 版本必须完全一致；
-- 若报错，通常意味着某个包被单独升级了，请同步修改或回退。
+```bash
+fvm dart tool/task.dart migrations
+fvm dart tool/task.dart build-runner
+```
 
-## 构建钩子补充说明
+修改 `.drift` 表后，若当前 schema 版本已发布则递增 `schemaVersion`，否则更新尚未发布的步骤。`migrations` 生成 schema 快照与步骤辅助代码；实现迁移步骤后再跑 `build-runner`，提交生成的 schema 文件，并验证 `packages/feature_base/moodiary_data/test/db_migration_test.dart`。细节见 `packages/feature_base/moodiary_data/AGENTS.md`。
 
-- 原生库由 **Native Assets build hooks** 编译，缓存位于仓库根的 `.dart_tool/hooks_runner/`；
-- `flutter clean` **不会**清理该缓存；若修改 Rust 依赖后 APK 体积没有变化，先怀疑它；
-- `dart tool/task.dart clean` 会删除编辑器产物与该缓存；
-- 构建钩子在「目标平台 == 宿主平台」时提前返回，因此 `flutter test` 不会构建或加载任何 Rust 库、编辑器资源与许可证清单（`moodiary_sqlite_vec` 的 C 钩子除外）。
+## 组合生成
+
+```bash
+fvm dart tool/task.dart gen  # gen-rust + i18n + pigeon
+```
+
+`build-runner` 与 `migrations` 仍需单独执行。
+
+## 一致性检查与构建钩子
+
+`tool/check_generated.dart` 在 `analyze` 与 CI 中运行，检查 FRB 版本、两侧绑定 hash、共享 crate 钉定版本，以及各原生包的工具链 channel、FRB / ffigen 版本；并不要求每个 crate 的 `Cargo.toml` 完全相同。
+
+原生库通过 **Native Assets build hooks** 编译，缓存位于 `.dart_tool/hooks_runner/`。若 `flutter clean` 后构建仍陈旧，可运行 `fvm dart tool/task.dart clean` 清理该缓存与编辑器资源。
+
+编辑器与许可证清单钩子跳过宿主目标构建；Rust 钩子仍会为宿主编译，CI 的 Dart job 通过 `hooks.user_defines.<pkg>.build_assets: false` 禁用它们。Dart 测试不加载这些 Rust 库，但需要 `sqlite3_simple`、`sqlite3_vec` 与 `flutter_js` 的宿主 code assets。

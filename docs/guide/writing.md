@@ -22,16 +22,19 @@ On an entry's edit screen you can set:
 
 - **Title**: the first thing you see in the list;
 - **Category**: groups entries on the same theme — see [categories](./organize#categories);
+- **Mood**: choose one of five levels, from Awful to Great, or leave it blank — see [Mood insights](./organize#mood-insights);
 - **Weather and place**: choose them manually, or have them filled in automatically after you configure [QWeather](../services/weather).
 
 ## Delete and trash
 
-Deleting an entry doesn't make it vanish right away. It moves to the **Trash** first, where you can restore it or purge it for good. The trash lives in the home screen's sidebar.
+Deleting an entry moves it to **Me → Trash**, where you can restore it or delete it permanently.
 
 ::: warning
 Once an entry is purged from the trash it cannot be recovered — handle with care.
 :::
 
-## Details like first-line indent
+## Saving and editor settings
 
-In **Settings** you can adjust habits such as the first-line indent, so the editor feels closer to writing on paper.
+Changes save automatically. Check the save status before leaving an entry.
+
+Under **Settings → Diary settings**, adjust first-line indentation and reorder or hide editor toolbar tools.

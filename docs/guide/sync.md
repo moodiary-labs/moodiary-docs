@@ -1,6 +1,8 @@
 # Backup and sync
 
-Moodiary supports three sync methods plus a local backup, all with optional end-to-end encryption.
+Moodiary supports WebDAV, S3, LAN transfer, and local backups. Cloud sync offers optional end-to-end encryption; LAN transfers use encrypted archives.
+
+Open **Me → Sync and backup** to configure a sync method.
 
 ## Sync methods compared
 
@@ -10,27 +12,27 @@ Moodiary supports three sync methods plus a local backup, all with optional end-
 | **WebDAV** | Cloud drives like Jianguoyun, Nextcloud | Server address, account |
 | **S3 / MinIO** | Self-hosted object storage, most flexible capacity | Endpoint, keys |
 
-All methods are **incremental** — only changed data is transferred.
+All three methods support **incremental transfer**, syncing entry updates and missing media.
 
 ## End-to-end encryption
 
 Once encryption is on, you only set a **sync password**:
 
-- The app derives a key from it (Argon2id) and encrypts your data with AES-GCM;
+- The app derives a key from the password using Argon2id to protect a randomly generated data key; content is encrypted with AES-GCM;
 - The key that actually encrypts your data never leaves the device in plaintext;
-- Your provider (cloud drive or object storage) only ever sees ciphertext.
+- Your provider stores encrypted content and an encrypted copy of the data key.
 
 ::: warning Your sync password can't be recovered
-If you forget your sync password, cloud data cannot be decrypted. Keep it somewhere safe.
+If you forget your sync password, locked cloud data cannot be decrypted. You can reset the cloud and upload your local data again; resetting deletes the remote copy and keeps local data.
 :::
 
 ## LAN sync
 
 1. Connect both devices to the same Wi-Fi and open Moodiary on each;
-2. On one device go to **Sync → LAN** and choose send or receive;
-3. The app discovers the other device automatically via mDNS, and transfer starts once you confirm.
+2. On the receiving device, open **Sync → LAN → Receive**;
+3. On the sender, choose **Send**, select the discovered device, and enter the receiver's six-digit pairing code.
 
-Transfer uses an entry-level AES-256 encrypted archive — no account setup required.
+Transfer is one-way and incremental, using an entry-level AES-256 encrypted archive. No account is needed; see [LAN setup](../services/lan).
 
 ::: tip
 If the other device can't be found, check whether your router has "AP isolation" (client isolation) enabled.
@@ -54,4 +56,4 @@ Under **Sync → S3**, fill in the Endpoint, Bucket, Region, Access Key, and Sec
 
 ## Backup
 
-If you don't plan to sync across devices, the simplest safeguard is to periodically generate a backup in **Settings** and store it elsewhere. Backup archives are also protected by end-to-end encryption.
+Create a backup under **Me → Import & export** and keep a copy elsewhere. Local backups are unencrypted ZIP files; cloud sync encryption does not protect them. See [Backup contents](./export-import#backup).

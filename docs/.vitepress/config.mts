@@ -5,44 +5,6 @@ import { defineConfig } from 'vitepress'
 // The site root serves English (the default locale); Simplified Chinese lives
 // under `/zh/` and is reached through the language switcher.
 
-/**
- * Tokenise for MiniSearch: Han runs become overlapping bigrams, everything
- * else stays a whole word.  Chinese has no spaces, so without the bigrams a
- * whole sentence indexes as one unmatchable token.
- *
- * A segment can mix scripts, and Han and Latin letters are both `\p{L}`, so
- * `WebDAV同步` arrives here as one segment.  Splitting it into script runs
- * first keeps `webdav` searchable; bigramming the segment as a whole would
- * shred it into `w`, `we`, `eb` and match nothing useful.
- */
-function tokenize(text: string): string[] {
-  const tokens: string[] = []
-  for (const segment of text.split(/[^\p{L}\p{N}_]+/u)) {
-    if (!segment) continue
-    for (const run of segment.match(/\p{Script=Han}+|\P{Script=Han}+/gu) ?? []) {
-      if (!/\p{Script=Han}/u.test(run)) {
-        tokens.push(run.toLowerCase())
-        continue
-      }
-      const chars = [...run]
-      for (let i = 0; i < chars.length; i++) {
-        tokens.push(chars[i]!)
-        if (i + 1 < chars.length) tokens.push(chars[i]! + chars[i + 1]!)
-      }
-    }
-  }
-  return tokens
-}
-
-/**
- * Prefix-match the term being typed, and only that one.  MiniSearch defaults
- * to prefix-matching every term, which under bigram tokenisation lets the
- * trailing Han unigram of a finished query (the `步` of `同步`) match every
- * `步*` bigram in the index and drag unrelated pages up the ranking.
- */
-const prefixLastTermOnly = (_term: string, index: number, terms: string[]) =>
-  index === terms.length - 1
-
 export default defineConfig({
   title: 'Moodiary',
 
@@ -183,13 +145,14 @@ export default defineConfig({
 
         editLink: {
           pattern:
-            'https://github.com/ZhuJHua/moodiary-docs/edit/master/docs/:path',
+            'https://github.com/ZhuJHua/moodiary-docs/edit/main/docs/:path',
           text: 'Edit this page on GitHub',
         },
 
         footer: {
           message: 'Released under the AGPL-3.0 License',
-          copyright: 'Copyright © 2022-present ZhuJHua and Moodiary contributors',
+          copyright:
+            'Copyright © 2022-present ZhuJHua and Moodiary contributors<br><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">赣ICP备2022010939号-5</a>',
         },
 
         lastUpdated: {
@@ -307,13 +270,14 @@ export default defineConfig({
 
         editLink: {
           pattern:
-            'https://github.com/ZhuJHua/moodiary-docs/edit/master/docs/:path',
+            'https://github.com/ZhuJHua/moodiary-docs/edit/main/docs/:path',
           text: '在 GitHub 上编辑此页',
         },
 
         footer: {
           message: '基于 AGPL-3.0 许可发布',
-          copyright: 'Copyright © 2022-present ZhuJHua 与 Moodiary 贡献者',
+          copyright:
+            'Copyright © 2022-present ZhuJHua 与 Moodiary 贡献者<br><a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">赣ICP备2022010939号-5</a>',
         },
 
         lastUpdated: {
@@ -346,21 +310,35 @@ export default defineConfig({
     socialLinks: [{ icon: 'github', link: 'https://github.com/ZhuJHua/moodiary' }],
     externalLinkIcon: true,
 
-    // Search must live here, at the site level.  The build plugin reads
-    // `site.themeConfig.search.provider` to decide whether to emit an index,
-    // and the client compiles the search box in behind a `__VP_LOCAL_SEARCH__`
-    // define derived from the same place.  Neither looks at
-    // `locales.*.themeConfig`, so a copy nested there silently disables search
-    // altogether.  Per-locale strings belong in `options.locales` instead,
-    // which the search components do resolve against the active locale.
+    // Keep the provider at site level so VitePress builds both locale indexes.
+    // VitePress 2 handles Chinese segmentation during indexing and searching.
     search: {
       provider: 'local',
       options: {
-        // One index is built per locale, all of them with these options, so
-        // the tokenizer has to handle English and Chinese at once.
-        miniSearch: {
-          options: { tokenize },
-          searchOptions: { tokenize, prefix: prefixLastTermOnly },
+        locales: {
+          zh: {
+            translations: {
+              button: {
+                buttonText: '搜索文档',
+                buttonAriaLabel: '搜索文档',
+              },
+              modal: {
+                displayDetails: '显示详情',
+                resetButtonTitle: '清除搜索',
+                backButtonTitle: '关闭搜索',
+                noResultsText: '没有找到相关结果',
+                footer: {
+                  selectText: '选择',
+                  selectKeyAriaLabel: '回车键',
+                  navigateText: '切换',
+                  navigateUpKeyAriaLabel: '向上键',
+                  navigateDownKeyAriaLabel: '向下键',
+                  closeText: '关闭',
+                  closeKeyAriaLabel: 'Esc 键',
+                },
+              },
+            },
+          },
         },
       },
     },

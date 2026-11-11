@@ -3,7 +3,7 @@
 Everything you do day to day goes through `tool/task.dart`, run from the repository root:
 
 ```bash
-dart tool/task.dart <command>
+fvm dart tool/task.dart <command>
 ```
 
 ## Command reference
@@ -21,29 +21,34 @@ dart tool/task.dart <command>
 | `build-runner` | Runs `build_runner` across the workspace and formats the result |
 | `gen-rust` | Regenerates the Rust FFI bindings |
 | `i18n` | Regenerates the slang copy |
-| `gen` | `gen-rust` + `i18n` |
+| `pigeon` | Regenerates moodiary_native platform bindings |
+| `migrations` | Generates drift schema snapshots and migration step helpers |
+| `gen` | `gen-rust` + `i18n` + `pigeon` |
 | `deps` | Prints the package dependency graph |
 | `clean` | Clears the editor output and the build hook cache |
 
 ## Running and building
 
 ```bash
-dart tool/task.dart run                # development
-dart tool/task.dart run -- --release   # extra flutter arguments go after --
-dart tool/task.dart build-apk          # APK and iOS are the only two targets
+fvm dart tool/task.dart run -- --flavor production  # Android
+fvm dart tool/task.dart run                         # iOS; select an iOS device
+fvm dart tool/task.dart build-apk                   # defaults to production
+fvm dart tool/task.dart build-apk -- --flavor alpha --release
+fvm dart tool/task.dart build-ios
 ```
 
 ## Testing
 
 ```bash
-dart tool/task.dart test                 # default: packages touched since HEAD
-dart tool/task.dart test --diff=origin/develop
-dart tool/task.dart test --all           # the whole repository, which is what CI uses
+fvm dart tool/task.dart test                 # default: branch changes since the merge-base with origin/develop
+fvm dart tool/task.dart test --diff=origin/develop
+fvm dart tool/task.dart test --all           # the whole repository, which is what CI uses
 ```
 
 - "Affected" means the packages that changed relative to the baseline, plus everything that transitively depends on them.
-- Tests run **serially**, so that packages don't starve each other by running in parallel.
-- Only the legacy database migration tests need `ISAR_TEST_DYLIB` pointing at the dynamic library; nothing else requires setup.
+- All selected test directories run in one `flutter test` process from the root. The default baseline falls back to `HEAD` if the merge-base is unavailable; uncommitted and untracked files are included.
+- Root `pubspec.yaml` / `pubspec.lock` changes select the whole repository.
+- Only the legacy database migration tests need `ISAR_TEST_DYLIB` pointing at the dynamic library; see [Testing](./testing) for build-hook requirements.
 
 ::: warning
 Running `flutter test` directly in the repository root finds no tests at all. Always go through `task.dart`.
@@ -52,9 +57,9 @@ Running `flutter test` directly in the repository root finds no tests at all. Al
 ## Code generation
 
 ```bash
-dart tool/task.dart build-runner   # injectable / freezed / json_serializable
-dart tool/task.dart gen-rust       # after changing rust/src/api
-dart tool/task.dart i18n           # after changing *.i18n.json
+fvm dart tool/task.dart build-runner   # injectable / freezed / json_serializable
+fvm dart tool/task.dart gen-rust       # after changing rust/src/api
+fvm dart tool/task.dart i18n           # after changing i18n/flutter or mui strings
 ```
 
 See [Code generation](./codegen) for the details.
@@ -67,12 +72,13 @@ for d in packages/foundation/*/rust; do
 done
 ```
 
-Note the glob over `packages/foundation/*/rust`: iterating over a hand-written list of package names makes it easy to miss `moodiary_rust`.
+Note the glob over `packages/foundation/*/rust`: iterating over a hand-written list of package names makes it easy to miss `fast_core`.
 
 ## The editor (WebView)
 
 ```bash
 cd packages/feature_base/moodiary_editor/editor
+corepack pnpm install --frozen-lockfile
 corepack pnpm type-check
 corepack pnpm test
 ```

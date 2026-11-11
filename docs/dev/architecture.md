@@ -7,12 +7,12 @@ Moodiary is a **layered pub workspace monorepo**: the `pubspec.yaml` at the root
 ```
 moodiary/
 ├── tool/          # task runner, layer check, release scripts
-├── mobile/        # Flutter app (pub name moodiary, Android + iOS)
+├── mobile/        # Flutter app (pub name moodiary_mobile, Android + iOS)
 │   └── lib/
 │       ├── app/   # composition layer: DI, routing, shell, lifecycle, settings
 │       └── main.dart
 ├── packages/
-│   ├── foundation/    # layer 1: no internal dependencies
+│   ├── foundation/    # layer 1: shared primitives and native libraries
 │   ├── core/          # layer 2: domain-agnostic infrastructure
 │   ├── feature_base/  # layer 3: reusable domain foundations
 │   └── feature/       # layer 4: feature modules, independent of one another
@@ -25,7 +25,7 @@ Dependencies flow strictly in one direction: `foundation → core → feature_ba
 
 ### foundation
 
-The leaf layer. Nothing here depends on any internal package.
+Most packages here have no internal dependencies; the six `fast_*` packages use the shared `rust_hook` build package.
 
 | Package | Responsibility |
 | --- | --- |
@@ -36,13 +36,14 @@ The leaf layer. Nothing here depends on any internal package.
 | `moodiary_router` | Typed routing primitives on top of go_router |
 | `mui` | The design system, complementing Material |
 | `moodiary_utils` | Pure helper functions and content conversion |
-| `moodiary_rust` | HTTP client/server, WebDAV/S3 sync, LLM, graph layout |
+| `fast_core` | HTTP client/server, WebDAV/S3 sync, LLM, graph layout |
 | `fast_image` | Image pipeline (thumbnails, region decoding, tiled viewing) |
 | `fast_press` | Typeset export to PDF / DOCX |
 | `fast_tokenizer` | Tokenization with jieba + HF tokenizer |
 | `fast_crypto` | AES-GCM + Argon2id |
 | `fast_zip` | Compression and extraction (with per-entry AES) |
-| `moodiary_sqlite_vec` | sqlite-vec, local vector search |
+| `moodiary_native` | Pigeon APIs for the app's Kotlin / Swift integrations |
+| `rust_hook` | Shared build hooks for the six Rust packages |
 
 ### core
 
@@ -65,15 +66,16 @@ Anything that combines features belongs in `mobile/lib/app`.
 pub can only guarantee that there are no cycles, not that dependencies point the right way. `tool/check_layers.dart` performs a static check against the baseline in `tool/layer_baseline.txt` and rejects:
 
 - a lower layer depending on a higher one;
-- packages within the same layer importing each other;
-- violations of the intra-layer order (core and feature_base each have an internal order);
+- same-layer dependencies outside the allowed core / feature_base order and the shared Rust hook;
 - product code importing `material` directly (it has to go through `package:mui/mui.dart`).
 
-CI runs this check on every Pull Request.
+CI runs this check in the Dart job when the PR paths affect it.
 
-## Layering inside the app
+## App composition and native code
 
-`mobile/lib` has an order of its own too: `gen → core → data → component → feature/<x> → app → main.dart`.
+`mobile/lib` contains `app/`, generated assets in `gen/`, and `main.dart`. Shared domain and feature code lives in `packages/`. The composition root wires get_it / injectable services and routes; Riverpod manages UI state.
+
+Custom Kotlin / Swift integrations belong in `moodiary_native` and use Pigeon. `fast_core` exposes separate HTTP, sync, LLM and graph facades; their owners are defined in `tool/check_layers.dart`. The database uses external `sqlite3_simple` and `sqlite3_vec` packages for full-text and vector search.
 
 ## Deciding where code goes
 

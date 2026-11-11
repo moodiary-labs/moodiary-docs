@@ -5,9 +5,11 @@
 // regenerated from Material Color Utilities by `npm run theme:gen`.
 import type { Theme } from 'vitepress'
 import DefaultTheme from 'vitepress/theme'
+import Layout from './Layout.vue'
 import './generated/monochrome.css'
 import './style.css'
 
 export default {
   extends: DefaultTheme,
+  Layout,
 } satisfies Theme

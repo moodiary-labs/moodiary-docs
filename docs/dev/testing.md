@@ -1,43 +1,46 @@
 # Testing
 
-Moodiary's tests are spread across three tracks — Dart, Rust and the editor — and CI runs all of them on every Pull Request.
+Moodiary has Dart, Rust and editor test suites. `.github/workflows/quality.yml` selects CI jobs by PR paths; a manual dispatch runs all three.
 
 ## Dart
 
 ```bash
-dart tool/task.dart test          # the affected packages
-dart tool/task.dart test --all    # the whole repository
-dart tool/task.dart test-mobile   # mobile/ only
+fvm dart tool/task.dart test          # affected packages
+fvm dart tool/task.dart test --all    # whole repository
+fvm dart tool/task.dart test-mobile   # mobile/ only
 ```
 
-- "Affected" is computed from `--diff=<ref>` (default `HEAD`, including uncommitted and untracked files), plus everything that transitively depends on those packages.
-- Tests run serially.
-- The only tests that need the `ISAR_TEST_DYLIB` environment variable are the legacy database migration tests.
+- The default baseline is the merge-base of `HEAD` and `origin/develop` (falling back to `HEAD` if unavailable). `--diff=<ref>` overrides it. Uncommitted and untracked files are included, as are transitive dependents of changed packages.
+- Root `pubspec.yaml` or `pubspec.lock` changes select all packages, as does `--all`.
+- The runner passes the selected `test/` directories to **one `flutter test` process at the repository root**; hooks and the frontend compiler run once.
+- Only legacy database migration tests need `ISAR_TEST_DYLIB`.
 
 ### Writing repository tests
 
-Tests at the repository layer build an in-memory database directly:
+Construct an in-memory database and enable foreign keys when testing cascades:
 
 ```dart
-final db = MoodiaryDatabase.forTesting(/* ... */);
+final db = MoodiaryDatabase.forTesting(NativeDatabase.memory());
+await db.customStatement('PRAGMA foreign_keys = ON');
+addTearDown(db.close);
 final repo = DiaryRepository(db);
 ```
 
-### Tests that involve DI
-
-Swap in a fake in the container, and reset it when you are done:
+Higher layers can register fakes in get_it:
 
 ```dart
 setUp(() {
   getIt.registerSingleton<DiaryRepository>(FakeDiaryRepository());
 });
 
-tearDown(() => getIt.reset);
+tearDown(getIt.reset);
 ```
+
+Tests run with the repository root as cwd. Read repository files through `repoRoot` from `package:moodiary_lint/testing.dart`; write temporary data into each test's own `Directory.systemTemp.createTempSync()` directory and clean it up.
 
 ## Rust
 
-Run clippy and the tests across all six native packages:
+Each of the six native packages has its own crate; run checks in all of them:
 
 ```bash
 for d in packages/foundation/*/rust; do
@@ -45,14 +48,13 @@ for d in packages/foundation/*/rust; do
 done
 ```
 
-::: warning
-Don't try to cover everything from a single directory with something like `cargo test --workspace` — it's easy to miss `moodiary_rust` that way.
-:::
+A `cargo test --workspace` in one crate does not cover the other crates.
 
 ## The editor (WebView)
 
 ```bash
 cd packages/feature_base/moodiary_editor/editor
+corepack pnpm install --frozen-lockfile
 corepack pnpm type-check
 corepack pnpm test
 ```
@@ -62,11 +64,11 @@ corepack pnpm test
 | Job | Contents |
 | --- | --- |
 | Dart | `check_generated` → `flutter analyze` → `check_layers` → `task.dart test --all` |
-| Rust | `cargo clippy -D warnings` and `cargo test` across the six native packages |
-| Editor | `pnpm type-check` and `pnpm test` |
+| Rust | `cargo clippy --all-targets -- -D warnings` and `cargo test` across all six native packages |
+| Editor | Frozen-lockfile install, `pnpm type-check` and `pnpm test` |
 
-## Things to watch out for
+Run `fvm dart tool/task.dart analyze`, `test --all`, and the Rust / editor commands above for full local verification.
 
-- Build hooks return early under tests (host platform), so **Dart tests never load the Rust libraries** — native logic has to be covered by Rust's own tests.
-- Tests fail outright when generated files are missing, so run [code generation](./codegen) first.
-- Running `flutter test` from the repository root finds nothing. Always use `task.dart`.
+The editor and license-manifest hooks skip host-target builds. **Rust hooks build for the host locally**; CI disables the six in-repo Rust hooks before Dart tests. Dart tests never load these libraries; `sqlite3_simple`, `sqlite3_vec` and `flutter_js` still build their required host assets. The root pubspec dev-depends on `moodiary_data` and `moodiary_assistant` to include these hooks.
+
+Regenerate missing sources using [Code generation](./codegen). There is no root `test/` directory, so bare `flutter test` at the root needs explicit package test paths; `task.dart` supplies them.

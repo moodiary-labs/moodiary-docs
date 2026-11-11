@@ -6,19 +6,19 @@ The usual pitfalls on the development side. For questions as a user, use [GitHub
 
 ### `flutter test` finds no tests
 
-There are no tests in the repository root. Use `dart tool/task.dart test` (which fans out to the packages) and `test-mobile`.
+There are no tests in the repository root. Use `fvm dart tool/task.dart test` (one root process with explicit package test paths), or `test-mobile` for the app. See [Testing](./testing).
 
 ### The APK size doesn't change after I modify a Rust dependency
 
 The build hook cache lives in `.dart_tool/hooks_runner/`, and `flutter clean` does **not** clear it. Run:
 
 ```bash
-dart tool/task.dart clean
+fvm dart tool/task.dart clean
 ```
 
 ### The build complains that editor assets are missing
 
-The WebView assets for `moodiary_editor` are produced by a build hook on the first run/build, which needs **corepack** to be available (it ships with Node). Check that `corepack pnpm --version` works.
+The WebView assets for `moodiary_editor` are produced by a build hook on the first run/build, which needs **corepack** on `PATH`. If missing, run `npm install -g corepack`; then check `corepack pnpm --version` from the editor directory.
 
 ### `gen-rust` refuses to run
 
@@ -28,6 +28,10 @@ The `flutter_rust_bridge_codegen` CLI doesn't match the version pinned in the pu
 cargo install flutter_rust_bridge_codegen --version 2.13.0 --locked
 ```
 
+### Android asks for a flavor
+
+Use `fvm dart tool/task.dart run -- --flavor production` (or `alpha`). `build-apk` defaults to production, but `run` does not supply a flavor.
+
 ### The Gradle / Android build fails
 
 - Check that your JDK is **21** (the daemon JVM is pinned by `gradle-daemon-jvm.properties`).
@@ -36,7 +40,7 @@ cargo install flutter_rust_bridge_codegen --version 2.13.0 --locked
 
 ### The Rust toolchain is wrong
 
-Each native package's `rust/rust-toolchain.toml` pins **1.95.0 stable**, and `rustup` installs it during the build. If you switched your global toolchain by hand, running any `cargo` command back inside the repository is enough to override it.
+Each native package's `rust/rust-toolchain.toml` pins **1.99.1 stable**, and `rustup` installs it during the build. Run Cargo inside a package's `rust/` directory to select that toolchain; the repository root has no toolchain file.
 
 ## Layers and analysis
 
@@ -45,12 +49,12 @@ Each native package's `rust/rust-toolchain.toml` pins **1.95.0 stable**, and `ru
 The layer check treats `tool/layer_baseline.txt` as a zero baseline. The usual causes are:
 
 - a lower-layer package depending on a higher-layer one;
-- packages in the same layer referencing each other (core and feature_base have an internal order);
+- same-layer dependencies outside the allowed core / feature_base order or shared Rust hook;
 - product code importing `'package:flutter/material.dart'` directly, which should be `import 'package:mui/mui.dart'`.
 
 ### `check_generated` reports an error
 
-The `Cargo.toml` files, toolchains and FRB / ffigen versions of the six native packages have to match exactly. Usually one package was upgraded on its own, so align the rest or revert it.
+Shared crate pins, toolchain channels and FRB / ffigen versions must agree across native packages; paired FRB bindings must also match their pins and content hashes. Usually one package was upgraded on its own, so align the rest or revert it.
 
 ### analyze says an i18n key is dead
 
@@ -68,7 +72,7 @@ export ISAR_TEST_DYLIB=/path/to/libisar.dylib
 
 ### Tests interfere with each other
 
-Tests that rely on `getIt` need `getIt.reset` in `tearDown`, with the fakes registered in `setUp`.
+Tests that rely on `getIt` need `tearDown(getIt.reset)`, with the fakes registered in `setUp`.
 
 ## Anything else
 
@@ -80,4 +84,4 @@ Tests that rely on `getIt` need `getIt.reset` in `tearDown`, with the fakes regi
 
 ### I want to contribute to the desktop version
 
-The desktop version is being rewritten. The package layering already leaves room for it, but there is no usable desktop target today. You're welcome to join the discussion in Issues.
+The current repository contains only the mobile app target. The shared package layers leave room for desktop support. You're welcome to join the discussion in Issues.

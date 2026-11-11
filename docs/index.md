@@ -14,7 +14,7 @@ hero:
       text: Get Started
       link: /guide/quick-start
     - theme: alt
-      text: Install Moodiary
+      text: Download
       link: /guide/install
     - theme: alt
       text: Contribute
@@ -22,15 +22,15 @@ hero:
 
 features:
   - title: Offline-first
-    details: Every entry lives in a local SQLite database. Moodiary works in full without a network connection — no ads, and nothing is collected about you.
+    details: Write and read offline. Your entries are stored locally, with no ads or data collection.
   - title: Rich text
-    details: The TipTap-based editor mixes text with images, audio and video, and Markdown is always at hand when you prefer plain syntax.
-  - title: Search and categories
-    details: Full-text search on SQLite FTS5 returns results in milliseconds, categories keep everything tidy, and an optional local semantic search finds that one entry even when you only remember the vibe.
+    details: Combine text, images, audio and video. Use Markdown shortcuts as you write.
+  - title: Search and moods
+    details: Organize entries by category, find them with full-text or local semantic search, and follow your mood trends.
   - title: Backup and sync
-    details: Sync through WebDAV, S3 / MinIO or direct LAN connections. With end-to-end encryption, even your cloud provider can't read what you wrote.
+    details: Back up locally or sync through WebDAV, S3 / MinIO and LAN transfer, with optional end-to-end encryption.
   - title: Themes and fonts
-    details: Ships with a default monochrome palette, plus dynamic color that follows your system, custom accent colors, and custom fonts — variable fonts included.
+    details: Choose monochrome, system or custom colors, and import your own fonts, including variable fonts.
   - title: Assistant
-    details: Connect any OpenAI- or Anthropic-compatible provider, including self-hosted Ollama; mood suggestions and semantic search run offline on-device.
+    details: Connect an OpenAI- or Anthropic-compatible provider, including Ollama, to chat and work with your diary using tools you approve.
 ---

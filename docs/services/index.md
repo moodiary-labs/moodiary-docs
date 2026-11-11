@@ -1,6 +1,6 @@
 # Service configuration overview
 
-Moodiary works fully offline on its own. The optional services below enhance the experience, and they're all configured from **Settings → Services**.
+Writing and browsing work offline. Configure weather, maps, AI, and model downloads under **Settings → Services**; configure sync under **Me → Sync and backup**.
 
 | Service | Purpose | Required |
 | --- | --- | --- |
@@ -12,13 +12,13 @@ Moodiary works fully offline on its own. The optional services below enhance the
 | [AI models](./ai) | Providers powering AI assistant chat | Required for chat; self-hosted Ollama works |
 
 ::: tip Privacy
-Requests for these services are sent directly from the app to the provider — Moodiary runs no relay server. Keys are stored in your system's secure storage and are not carried over by [backups](../guide/export-import#backup) or sync data.
+Requests go directly from the app to the provider. Keys are kept in system secure storage and sent to the relevant service for authentication; they are excluded from [backups](../guide/export-import#backup) and sync data.
 :::
 
 ## General steps
 
-1. Sign up on the provider's site and create an application (API key).
-2. In Moodiary, go to **Settings → Services**, find the matching entry, and paste in the key.
-3. Return to the relevant feature page and verify it works.
+1. Open the relevant guide above to obtain the provider's address and credentials.
+2. Enter them on the matching service or sync page.
+3. Return to the feature and verify it works.
 
-The free tier offered by most providers is usually enough for personal use.
+If model downloads fail, check the [Hugging Face download source](./ai#model-download-source).

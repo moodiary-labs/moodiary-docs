@@ -1,24 +1,22 @@
 # Development environment
 
-Moodiary is a **Flutter + Rust** monorepo. This page takes you from nothing to a working development environment.
+Moodiary is a **Flutter + Rust** monorepo. Run the commands below from the repository root.
 
 ## Tools you need
 
 | Tool | Version | Notes |
 | --- | --- | --- |
-| [FVM](https://fvm.app/) | latest | Manages the Flutter version; every command goes through it |
-| Flutter | **3.47.2** (pinned by `.fvmrc`) | Installed automatically by `fvm use` |
-| Rust | **1.95.0** stable (pinned by each package's `rust/rust-toolchain.toml`) | Requires `rustup` |
-| Node.js + corepack | `^20.19.0` or `>=22.12.0` | The editor's WebView assets are bundled with pnpm by a build hook |
-| JDK | **21** | The Android build daemon is pinned to 21 |
-| Android SDK | API 36, NDK 28.2.13676358 | |
-| Xcode | New enough for the iOS 16.4 deployment target | iOS development only |
-| [melos](https://pub.dev/packages/melos) | 8.x | Workspace coordination |
-| [cargo-about](https://github.com/EmbarkStudios/cargo-about) | 0.9.2 | Generates the third-party license manifest at build time |
+| [FVM](https://fvm.app/) | Not pinned | Selects the SDK from `.fvmrc` |
+| Flutter / Dart | **3.47.8 / 3.13.0** | `.fvmrc` pins Flutter; pubspec SDK constraints are lower bounds |
+| Rust | **1.99.1 stable** | Requires `rustup`; each native package pins it in `rust/rust-toolchain.toml` |
+| Node.js + corepack | CI uses **24**; editor declares `^20.19.0` or `>=22.12.0` | corepack must be available; the editor pins pnpm in `package.json` |
+| JDK | **21** | Android's daemon JVM is pinned to 21 |
+| Android SDK | API 36, NDK 28.2.13676358 | The app targets arm64, Android API 28 or later |
+| Xcode | CI uses **27.1** | iOS deployment target: **16.0**; iOS development requires macOS |
+| [melos](https://pub.dev/packages/melos) | **8.6.0** | Pinned in the root `pubspec.yaml`; its CLI must be on `PATH` |
+| [cargo-about](https://github.com/EmbarkStudios/cargo-about) | **0.9.2** | Generates the third-party license manifest at build time |
 
-::: warning Rust does not need nightly
-The toolchain is **stable 1.95.0**, selected automatically by the `rust-toolchain.toml` of each native package. `rustup` installs the matching target for you on the first build.
-:::
+Rustup selects the pinned toolchain when Cargo runs inside a package's `rust/` directory; the repository root has no Rust toolchain file.
 
 ## Bootstrapping
 
@@ -26,34 +24,36 @@ The toolchain is **stable 1.95.0**, selected automatically by the `rust-toolchai
 git clone https://github.com/ZhuJHua/moodiary.git
 cd moodiary
 
-fvm use                    # install and select Flutter 3.47.2
-dart pub global run melos bootstrap   # or, with melos installed globally: melos bootstrap
-dart tool/task.dart setup  # flutter pub get
+fvm use
+fvm dart pub global activate melos 8.6.0
+fvm dart tool/task.dart setup  # flutter pub get
+melos bootstrap              # workspace activation and IDE module files; no codegen
+cargo install cargo-about --version 0.9.2 --locked
 ```
 
-A couple of things worth knowing:
-
-- `melos bootstrap` activates the pub workspace and regenerates the IDE module files — it does **not** run code generation.
-- The WebView assets for the editor (`moodiary_editor`) are produced by a build hook on your first run/build, so `corepack` has to be available.
+The editor's WebView bundle is built by a hook on run/build. Check `corepack pnpm --version` in `packages/feature_base/moodiary_editor/editor`; if corepack is missing, install it with `npm install -g corepack`.
 
 ## Verifying your setup
 
 ```bash
-dart tool/task.dart analyze   # generated-output consistency + layer check + flutter analyze
-dart tool/task.dart test      # runs the affected packages
+fvm dart tool/task.dart analyze   # generated-binding consistency + layer check + flutter analyze
+fvm dart tool/task.dart test      # affected packages; use --all for the whole repository
 ```
+
+See [Testing](./testing) for Rust and editor checks and the optional legacy migration test library.
 
 ## Running the app
 
 ```bash
-dart tool/task.dart run               # flutter run, picks a device automatically
-dart tool/task.dart run -- --release  # extra flutter arguments go after --
+fvm dart tool/task.dart run -- --flavor production  # Android
+fvm dart tool/task.dart run                         # iOS; select an iOS device
+fvm dart tool/task.dart run -- --flavor alpha --release
 ```
 
-The only build targets supported today are **Android** (`build-apk`) and **iOS** (`build-ios`).
+Extra Flutter arguments go after `--`. The supported app targets are **Android** (`build-apk`, production flavor by default) and **iOS** (`build-ios`).
 
 ## Next steps
 
 - [Repository structure and layers](./architecture): how the code is organized.
-- [Common commands](./workflow): every command you need day to day.
+- [Common commands](./workflow): everyday commands.
 - [FAQ](./faq): start here when a build fails.

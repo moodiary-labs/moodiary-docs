@@ -4,12 +4,12 @@
 
 | Platform | Status | How to get it |
 | --- | --- | --- |
-| Android | ✅ Released | Download the APK from [GitHub Releases](https://github.com/ZhuJHua/moodiary/releases) |
-| iOS | 🚧 No public release yet | Build it yourself by following the [developer docs](../dev/setup) |
+| Android | Released | Download the APK from [GitHub Releases](https://github.com/ZhuJHua/moodiary/releases/latest) |
+| iOS | Released | Download from the [App Store](https://apps.apple.com/app/id6740092321) |
 | Windows / macOS / Linux | 🚧 In progress | Coming soon |
 
 ::: tip System requirements
-Android needs **9.0 (API 28)** or later; iOS needs **16.4** or later.
+Android needs **9.0 (API 28)** or later; iOS needs **16.0** or later.
 :::
 
 ## Install the Android app
@@ -20,17 +20,22 @@ Android needs **9.0 (API 28)** or later; iOS needs **16.4** or later.
 
 The package targets `arm64-v8a` devices — that is, the vast majority of phones and tablets from recent years.
 
+## Install the iOS app
+
+Open [Moodiary on the App Store](https://apps.apple.com/app/id6740092321) and install it.
+
 ## Update
 
-Moodiary does not update itself. When a new version is released, just download the package again and install it over the old one; your data won't be lost.
+- **Android**: use **Settings → About → Check for updates**, or download the latest APK from GitHub Releases and install it over the existing app.
+- **iOS**: update through the App Store. Automatic updates follow your App Store settings.
 
-::: warning Before installing over the old version
-Overwriting is safe, but regular [backups](./sync#backup) are always a good habit.
+::: warning Before updating
+Keep a [backup](./export-import#backup) before updating. You do not need to uninstall the app.
 :::
 
 ## Where your data lives
 
-All of Moodiary's data is stored in the app's private directory, in a local SQLite database. Uninstalling the app **permanently deletes** this data, so:
+Entries and metadata are stored in a local SQLite database; media files are stored separately in the app's private directory. Uninstalling the app **deletes your local entries and media**, so:
 
 - Before you switch phones or reinstall, first [export](./export-import) or [sync](./sync) your data;
 - The app cannot read other apps' directories, and a system "clear storage" action will also wipe your diary.

@@ -1,7 +1,7 @@
 /**
  * Hand-written additions on top of the generated monochrome palette
- * (see `generated/monochrome.css`). Everything here stays greyscale so the
- * site keeps Moodiary's default black & white look.
+ * (see `generated/monochrome.css`). The hero uses the logo's soft colors;
+ * the rest of the site keeps Moodiary's default black & white look.
  */
 
 /* Typography -------------------------------------------------------------- */
@@ -28,24 +28,62 @@
     var(--vp-c-text-1) 30%,
     var(--vp-c-brand-2)
   );
+}
 
-  --vp-home-hero-image-background-image: linear-gradient(
-    -45deg,
-    var(--vp-c-divider) 50%,
-    var(--vp-c-bg-soft) 50%
-  );
-  --vp-home-hero-image-filter: blur(44px);
+/* A small logo on layered paper, rather than an enlarged navigation icon. */
+.VPHomeHero {
+  position: relative;
+  z-index: 1;
+  overflow: visible;
+}
+
+.VPHomeHero .image {
+  position: relative;
+  z-index: 11;
+  margin: -48px -24px 0;
+}
+
+.VPHomeHero .image-container {
+  --hero-logo-size: 104px;
+  --hero-paper-size: 176px;
+  isolation: isolate;
+  height: 256px;
+}
+
+.VPHomeHero .image-bg {
+  width: 280px;
+  height: 260px;
+  background-image:
+    radial-gradient(ellipse at 74% 26%, rgb(46 184 114 / 12%), transparent 60%),
+    radial-gradient(ellipse at 24% 76%, rgb(250 70 89 / 9%), transparent 60%);
+  filter: blur(24px);
+  will-change: auto;
+  z-index: -2;
 }
 
 @media (min-width: 640px) {
-  :root {
-    --vp-home-hero-image-filter: blur(56px);
+  .VPHomeHero .image {
+    margin-top: -64px;
+  }
+
+  .VPHomeHero .image-container {
+    --hero-logo-size: 128px;
+    --hero-paper-size: 208px;
+    height: 304px;
   }
 }
 
 @media (min-width: 960px) {
-  :root {
-    --vp-home-hero-image-filter: blur(68px);
+  .VPHomeHero .image {
+    margin: 0;
+  }
+
+  .VPHomeHero .image-container {
+    --hero-logo-size: 144px;
+    --hero-paper-size: 232px;
+    height: 100%;
+    min-height: 304px;
+    transform: none;
   }
 }
 

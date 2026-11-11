@@ -16,7 +16,7 @@ Don't put your web login password into a third-party app. WebDAV for services li
 
 ## Configure in Moodiary
 
-Go to **Settings → Services → WebDAV Sync**:
+Go to **Me → Sync and backup → WebDAV**:
 
 | Field | Description | Example |
 | --- | --- | --- |
