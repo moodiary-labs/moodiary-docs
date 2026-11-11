@@ -1,14 +1,21 @@
+import { readFileSync } from 'node:fs'
 import { defineConfig } from 'vitepress'
 
 // https://vitepress.dev/guide/i18n
 //
 // The site root serves English (the default locale); Simplified Chinese lives
-// under `/zh/` and is reached through the language switcher.
+// under `/zh/`. Only a fresh visit to the root auto-selects a language.
+// Language choices are not persisted.
 
 export default defineConfig({
   title: 'Moodiary',
 
   head: [
+    [
+      'script',
+      { id: 'moodiary-locale' },
+      readFileSync(new URL('./locale.js', import.meta.url), 'utf8'),
+    ],
     ['link', { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
     // Safari ignores SVG favicons; this transparent PNG is its fallback.
     ['link', { rel: 'icon', type: 'image/png', href: '/favicon-32.png', sizes: '32x32' }],
